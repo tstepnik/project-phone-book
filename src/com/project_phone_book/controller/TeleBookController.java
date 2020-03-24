@@ -1,7 +1,9 @@
 package com.project_phone_book.controller;
 
+import com.project_phone_book.model.Contact;
 import com.project_phone_book.model.TeleBook;
 
+import java.io.File;
 import java.util.Scanner;
 
 public class TeleBookController {
@@ -13,40 +15,54 @@ public class TeleBookController {
 
     TeleBook teleBook = new TeleBook();
     Scanner sc = new Scanner(System.in);
+    FileOperations file = new FileOperations();
 
 
     public void phoneBookApi() {
-
+        createFileAndAddToList();
         Option option = null;
         while (option != Option.END) {
             intro();
             int choice = nextInt();
             try {
                 option = Option.values()[choice];
-            switch (option) {
-                case ADD_CONTACT:
-                    addContact();
-                    break;
-                case FIND_BY_CHARS:
-                    findByChars();
-                    break;
-                case DELETE:
-                    delete();
-                    break;
-                case END:
-                    end();
-                    break;
-                default:
-                    System.out.println("You choose wrong option.");
-            }
-            }catch (ArrayIndexOutOfBoundsException e){
+                switch (option) {
+                    case ADD_CONTACT:
+                        addContact();
+                        break;
+                    case FIND_BY_CHARS:
+                        findByChars();
+                        break;
+                    case DELETE:
+                        delete();
+                        break;
+                    case PRINT_ALL_CONTACTS:
+                        printAll();
+                        break;
+                    case END:
+                        end();
+                        break;
+                    default:
+                        System.out.println("You choose wrong option.");
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {
                 System.out.println("You took incorrect option.");
-            }catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 System.out.println("THere is no option such this.");
-            }catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 System.out.println("Name and telephone cannot be empty");
             }
         }
+    }
+
+
+    public void createFileAndAddToList() {
+        file.createFile();
+        file.addToListFromFile(teleBook.getContacts());
+    }
+
+    private void printAll() {
+        teleBook.getContacts().forEach(System.out::println);
     }
 
     private int nextInt() {
@@ -85,10 +101,15 @@ public class TeleBookController {
             System.out.println("Możesz podać tylko liczby całkowite:");
             number = sc.nextLine();
         }
-        teleBook.addContact(name, number);
+        Contact contact = teleBook.createContact(name, number);
+        teleBook.addContact(contact);
+        System.out.println("Contact successfully added");
     }
 
     private void end() {
+        file.deleteFile();
+        file.createFile();
+        teleBook.getContacts().forEach(contact1 -> file.addToFile(contact1));
         System.out.println("Koniec programu");
         sc.close();
     }

@@ -23,20 +23,27 @@ public class TeleBook {
         this.contacts = contacts;
     }
 
-    public void addContact(String name, String number) {
+    public Contact createContact(String name, String number) {
         if (name == null || number == null) {
             throw new NullPointerException("Name and telephone cannot be null.");
         } else if (name.isEmpty() || number.isEmpty()) {
             throw new IllegalArgumentException("Name and telephone cannot be empty.");
-        } else if (areContactsContain(number)) {
+        } else if (areContactsContain(number)&&!contacts.isEmpty()) {
             System.out.println("Podany numer telefonu już jest w bazie.");
         }
-        contacts.add(new Contact(name, number));
-
+        Contact contact = new Contact(name, number);
+        return contact;
     }
 
+    public void addContact(Contact contact){
+        contacts.add(contact);
+    }
+
+
+
+
     public void removeContact(String contactName) {
-        if (contacts.stream().allMatch(contact -> contact.getName().equals(contactName))) {
+        if (contacts.stream().anyMatch(contact -> contact.getName().equals(contactName))) {
             contacts.removeIf(str -> str.getName().equals(contactName));
             System.out.println("Kontakt usunięty pomyślnie");
         }else {
